@@ -23,7 +23,7 @@ def make_packet(dst, data, src=None):
 
  
 SPOOF = "7.8.8.8" #sys.argv[1]
-SERVER = "" #sys.argv[2]
+SERVER = sys.argv[1]
 RANDID = str(random.randint(1000000000,9999999999))
  
 #Create socket for sending packets
@@ -51,4 +51,6 @@ socktcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 socktcp.connect((SERVER,11112))
 print "Established connection, sending randid:",RANDID
 socktcp.send(RANDID)
-print socktcp.recv(1024)
+result = socktcp.recv(1024)
+if result == "True": print "You are capable of spoofing your IP address."
+else: print "You are not capable of spoofing your IP address."
