@@ -44,19 +44,24 @@ tcpserver.on('connection', function(sock) {
             conid += data.slice(0,-1);
             console.log('DATA ' + sock.remoteAddress + ': ' + data + " " + conid);
 
+            if( !(sessions.hasOwnProperty(conid) && Array.isArray(sessions[conid])) ){
+                console.log("conid not in sessions");   
+                sock.end();
+                return;
+            }
             console.log(sessions[conid]);
             if(sessions[conid].length<3){
-                sock.write('False')
-                    console.log(sock.remoteAddress + " " + "Less than 3 data points, no spoofing");
+                console.log(sock.remoteAddress + " " + "Less than 3 data points, no spoofing");
+                sock.write('False');
             }
             else if(sessions[conid][1] == sessions[conid][0]){
-                sock.write('False');
                 console.log(sock.remoteAddress + " " + "Spoofing did not occur");
+                sock.write('False');
             }
             else{
+                console.log(sock.remoteAddress + " " + "Spoofing seems to have occured");
                 sock.write('True');
                 sock.end();
-                console.log(sock.remoteAddress + " " + "Spoofing seems to have occured");
             }
 
         }
