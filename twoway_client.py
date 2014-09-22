@@ -46,11 +46,10 @@ print "Sent conclusion packet"
 # sock = socket.socket(proto = socket.IPPROTO_ICMP, type = socket.SOCK_RAW)
 # sock = socket.socket(socket.AF_INET, # Internet
 #                      socket.SOCK_DGRAM) # UDP
-time.sleep(3)
 socktcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 socktcp.connect((SERVER,11112))
 print "Established connection, sending randid:",RANDID
-socktcp.send(RANDID)
+socktcp.send(RANDID + ":")
 result = socktcp.recv(1024)
 if result == "True": print "You are capable of spoofing your IP address."
 else: print "You are not capable of spoofing your IP address."
