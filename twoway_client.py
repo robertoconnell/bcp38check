@@ -11,7 +11,7 @@ def make_packet(dst, data, src=None):
     #Create a new ICMP packet
     udp = ImpactPacket.UDP()
 
-    udp.set_uh_sport(40019)
+    udp.set_uh_sport(11112)
     udp.set_uh_dport(11111)
     
     udp.contains(ImpactPacket.Data(data))

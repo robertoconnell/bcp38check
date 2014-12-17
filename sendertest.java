@@ -32,7 +32,7 @@ public class sendertest {
         pack.setIPVersion(4);
         pack.setIPHeaderLength(5);
         pack.setProtocol(IPPacket.PROTOCOL_UDP);
-        pack.setTTL(5);
+        pack.setTTL(255);
 
         pack.setDestinationAsWord(DestAsInt); 
         pack.setSourceAsWord(SourceAsInt);
@@ -53,8 +53,10 @@ public class sendertest {
         RawSocket rs = new RawSocket();				
         rs.open(RawSocket.PF_INET, RawSocket.getProtocolByName("udp"));			
         rs.setIPHeaderInclude(true);
-	System.out.println("Socket created" + rs.isOpen());
-        rs.write(dstAddress,buffer);
+	System.out.println("Socket created " + rs.isOpen() + " Sending " + buffer);
+	byte [] local_source = {127,127,127,127};
+	rs.getSourceAddressForDestination(dstAddress,local_source);
+        System.out.println(rs.write(dstAddress,buffer) + " " + local_source);
         rs.close();
     }
     public static boolean doTest() throws UnknownHostException, SocketException, IOException  {
