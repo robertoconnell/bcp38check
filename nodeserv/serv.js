@@ -58,10 +58,12 @@ tcpserver.on('connection', function(sock) {
             if(sessions[session_id].length<3) {
                 console.log(sock.remoteAddress + " " + "Less than 3 data points, no spoofing");
                 sock.write('False');
+                sock.end();
             }
             else if(sessions[session_id][1] == sessions[session_id][0]) {
                 console.log(sock.remoteAddress + " " + "Spoofing did not occur");
                 sock.write('False');
+                sock.end();
             }
             else{
                 console.log(sock.remoteAddress + " " + "Spoofing seems to have occured");
