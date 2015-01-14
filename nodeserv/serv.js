@@ -20,15 +20,25 @@ udpserver.on('message', function (message, remote) {
     var got = message.toString().split(":").slice(1); //Parts of the message are split by colons
     //Slice removes front colon
     //Got[0]=packet type Got[1]=session_id
-    console.log(remote.address + ':' + remote.port +' - ' + got);
+    console.log("[*] UDP message: " + remote.address + ':' + remote.port +' - ' + got);
     if(got[0]=="i") { //Inital, unspoofed, packet
         sessions[ got[1] ] = new Array(remote.address);
     }
     if(got[0]=="s") { //Second, spoofed, packet
-        sessions[ got[1] ].push(remote.address);
+        if( !(sessions.hasOwnProperty(got[1]) && Array.isArray(sessions[got[1]])) ) {
+            console.log("Session does not exist");
+        }
+        else{
+            sessions[ got[1] ].push(remote.address);
+        }
     }
     if(got[0]=="f") { //Final, unspoofed, conclusions packet
-        sessions[ got[1] ].push(remote.address);
+        if( !(sessions.hasOwnProperty(got[1]) && Array.isArray(sessions[got[1]])) ) {
+            console.log("Session does not exist");
+        }
+        else{
+            sessions[ got[1] ].push(remote.address);
+        }
     }
 
 });
@@ -37,7 +47,7 @@ tcpserver.on('connection', function(sock) {
 
     console.log(sessions);
     var session_id = "";
-    console.log('CONNECTED: ' + sock.remoteAddress +':'+ sock.remotePort);
+    console.log('[*] TCP Connection: ' + sock.remoteAddress +':'+ sock.remotePort);
     sock.on('data', function(data) {
 
         data = data.toString();
@@ -47,26 +57,26 @@ tcpserver.on('connection', function(sock) {
         else {
 
             session_id += data.slice(0,-1); //Remove the colon from the end of the session id
-            console.log('DATA ' + sock.remoteAddress + ': ' + data + " " + session_id);
+            console.log('[*] Tcp DATA ' + sock.remoteAddress + ': ' + data + " " + session_id);
 
             if( !(sessions.hasOwnProperty(session_id) && Array.isArray(sessions[session_id])) ) {
-                console.log("session_id not in sessions");   
+                console.log("[!] session_id not in sessions");   
                 sock.end();
                 return;
             }
             console.log(sessions[session_id]);
             if(sessions[session_id].length<3) {
-                console.log(sock.remoteAddress + " " + "Less than 3 data points, no spoofing");
+                console.log(sock.remoteAddress + " " + "[*] Less than 3 data points, no spoofing");
                 sock.write('False');
                 sock.end();
             }
             else if(sessions[session_id][1] == sessions[session_id][0]) {
-                console.log(sock.remoteAddress + " " + "Spoofing did not occur");
+                console.log(sock.remoteAddress + " " + "[*] Spoofing did not occur");
                 sock.write('False');
                 sock.end();
             }
             else{
-                console.log(sock.remoteAddress + " " + "Spoofing seems to have occured");
+                console.log(sock.remoteAddress + " " + "[*] Spoofing seems to have occured");
                 sock.write('True');
                 sock.end();
             }
